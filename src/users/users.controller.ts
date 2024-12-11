@@ -1,6 +1,7 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -31,6 +32,7 @@ export class UsersController {
   //   return this.usersService.remove(+id);
   // }
 
+  @Public()
   @Post('login')
   login(@Body() loginDto: CreateUserDto) {
     return this.usersService.login(loginDto);
