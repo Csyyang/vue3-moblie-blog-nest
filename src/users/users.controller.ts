@@ -37,4 +37,15 @@ export class UsersController {
   login(@Body() loginDto: CreateUserDto) {
     return this.usersService.login(loginDto);
   }
+
+  @Public()
+  @Post('create')
+  async create(@Body() createDto: CreateUserDto) {
+    try {
+      await this.usersService.create(createDto);
+      return '创建成功';
+    } catch (error) {
+      return `创建失败:${error}`;
+    }
+  }
 }
