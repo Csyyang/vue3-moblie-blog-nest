@@ -9,25 +9,31 @@ import { TransformResponseInterceptor } from './common/Interceptor/TransformResp
 import { HttpExceptionFilter } from './common/exceptionFilter/HttpExceptionFilter';
 import { ArticleModule } from './article/article.module';
 import { UploadModule } from './upload/upload.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     UsersModule,
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: '1.14.67.118',
-      port: 3306,
-      username: 'admin',
-      password: 'admin',
-      database: 'blog',
-      entities: [],
-      synchronize: true,
-      autoLoadEntities: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mysql',
+        host: configService.get<string>('DB_HOST'),
+        port: configService.get<number>('DB_PORT'),
+        username: configService.get<string>('DB_USERNAME'),
+        password: configService.get<string>('DB_PASSWORD'),
+        database: configService.get<string>('DB_DATABASE'),
+        entities: [],
+        synchronize: true,
+        autoLoadEntities: true,
+      }),
+      inject: [ConfigService],
     }),
     ArticleModule,
     UploadModule,
-    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
