@@ -10,6 +10,8 @@ import { HttpExceptionFilter } from './common/exceptionFilter/HttpExceptionFilte
 import { ArticleModule } from './article/article.module';
 import { UploadModule } from './upload/upload.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         `.env.${process.env.NODE_ENV || 'development'}`, // 环境特定配置
       ],
     }),
+    // 数据库连接
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -38,6 +41,21 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     ArticleModule,
     UploadModule,
+    // 静态文件目录
+    ServeStaticModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => [
+        {
+          rootPath: join(
+            __dirname,
+            '..',
+            configService.get<string>('STATIC_DIR'),
+          ),
+          serveRoot: '/static',
+        },
+      ],
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AppController],
   providers: [
