@@ -7,6 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
+// 成功 拦截器，统一处理成功返回报文格式
 export class ApiResponse<T> {
   code: '00' | '01';
   data: T;
