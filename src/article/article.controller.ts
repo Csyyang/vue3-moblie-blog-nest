@@ -8,17 +8,16 @@ import {
   Delete,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 import { Public } from 'src/common/decorators/public.decorator';
+import { AddArticleDto } from './dto/add-article.dto';
 
 @Controller('article')
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Post()
-  create(@Body() createArticleDto: CreateArticleDto) {
-    return this.articleService.create(createArticleDto);
+  create() {
+    return this.articleService.create();
   }
 
   @Get('getAll')
@@ -33,12 +32,24 @@ export class ArticleController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateArticleDto: UpdateArticleDto) {
-    return this.articleService.update(+id, updateArticleDto);
+  update(@Param('id') id: string) {
+    return this.articleService.update(+id);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.articleService.remove(+id);
+  }
+
+  @Post('add')
+  @Public()
+  async addArticle(@Body() articleData: AddArticleDto) {
+    try {
+      await this.articleService.addArticle(articleData);
+
+      return '添加成功';
+    } catch (error) {
+      return error;
+    }
   }
 }

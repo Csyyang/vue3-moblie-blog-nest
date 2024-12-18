@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
+import { Upload } from './entities/files.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UploadService {
-  create(createUploadDto: CreateUploadDto) {
-    return 'This action adds a new upload';
-  }
+  constructor(
+    @InjectRepository(Upload) private uploadRepository: Repository<Upload>,
+  ) {}
 
   findAll() {
     return `This action returns all upload`;
@@ -16,11 +17,11 @@ export class UploadService {
     return `This action returns a #${id} upload`;
   }
 
-  update(id: number, updateUploadDto: UpdateUploadDto) {
-    return `This action updates a #${id} upload`;
-  }
-
   remove(id: number) {
     return `This action removes a #${id} upload`;
+  }
+
+  async updatePicture(obj: { filepath: string; filename: string }) {
+    await this.uploadRepository.save([obj]);
   }
 }

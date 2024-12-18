@@ -2,16 +2,12 @@ import {
   Controller,
   Get,
   Post,
-  Body,
-  Patch,
   Param,
   Delete,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
-import { CreateUploadDto } from './dto/create-upload.dto';
-import { UpdateUploadDto } from './dto/update-upload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { diskStorage } from 'multer';
@@ -27,11 +23,6 @@ export class UploadController {
     private configService: ConfigService,
   ) {}
 
-  @Post()
-  create(@Body() createUploadDto: CreateUploadDto) {
-    return this.uploadService.create(createUploadDto);
-  }
-
   @Get()
   findAll() {
     return this.uploadService.findAll();
@@ -40,11 +31,6 @@ export class UploadController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.uploadService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUploadDto: UpdateUploadDto) {
-    return this.uploadService.update(+id, updateUploadDto);
   }
 
   @Delete(':id')
@@ -74,7 +60,19 @@ export class UploadController {
       }),
     }),
   )
-  updatePicture(@UploadedFile() file: Express.Multer.File) {
-    return `${this.configService.get<string>('UPLOAD_DIR')}${file.filename}`;
+  async updatePicture(@UploadedFile() file: Express.Multer.File) {
+    // 入库
+    const path = `${this.configService.get<string>('UPLOAD_DIR')}${file.filename}`;
+
+    try {
+      await this.uploadService.updatePicture({
+        filepath: path,
+        filename: file.filename,
+      });
+      return `${this.configService.get<string>('UPLOAD_DIR')}${file.filename}`;
+    } catch (error) {
+      console.log(error);
+      return JSON.stringify(error);
+    }
   }
 }
