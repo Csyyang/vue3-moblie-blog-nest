@@ -9,6 +9,7 @@ import { TransformResponseInterceptor } from './common/Interceptor/TransformResp
 import { HttpExceptionFilter } from './common/exceptionFilter/HttpExceptionFilter';
 import { ArticleModule } from './article/article.module';
 import { UploadModule } from './upload/upload.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UploadModule } from './upload/upload.module';
     }),
     ArticleModule,
     UploadModule,
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [
