@@ -18,10 +18,14 @@ import { diskStorage } from 'multer';
 import * as path from 'path';
 import * as fs from 'fs';
 import { Public } from 'src/common/decorators/public.decorator';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(
+    private readonly uploadService: UploadService,
+    private configService: ConfigService,
+  ) {}
 
   @Post()
   create(@Body() createUploadDto: CreateUploadDto) {
@@ -71,6 +75,6 @@ export class UploadController {
     }),
   )
   updatePicture(@UploadedFile() file: Express.Multer.File) {
-    return `http://localhost:3000/static/${file.filename}`;
+    return `${this.configService.get<string>('UPLOAD_DIR')}${file.filename}`;
   }
 }

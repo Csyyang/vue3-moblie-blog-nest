@@ -16,6 +16,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     UsersModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: [
+        '.env', // 通用配置
+        `.env.${process.env.NODE_ENV || 'development'}`, // 环境特定配置
+      ],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
